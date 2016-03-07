@@ -1,0 +1,14 @@
+{
+  "name": "Software-Frameworks",
+  "version": "0.0.1",
+  "description": "React Book App",
+  "dependencies": {
+    "lodash": "~2.4.1",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "react-router": "^2.0.0"
+  },
+  "devDependencies": {
+    "reactify": "^1.1.1"
+  }
+}
