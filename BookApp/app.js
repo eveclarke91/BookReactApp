@@ -5,6 +5,9 @@
     var Route = ReactRouter.Route
     var Link = ReactRouter.Link
     var IndexRoute = ReactRouter.IndexRoute
+    var loginapi =  require ('./loginAPI').api;
+    var Login = require('./login.js' ).LoginPage;
+    var Register = require('./register.js' ).RegisterPage;
     var books = require('./data').allBooks ;
     var _ = require('lodash'); 
 
@@ -100,7 +103,29 @@
       }
     });
 
-    ReactDOM.render(
-      <BookClubApp books={books} />,
+
+ var App = React.createClass({
+      render : function() {
+        return (
+          <div>
+            <h1>Book Club App</h1>
+            {this.props.children}
+          </div>
+        )
+      }
+    });
+
+    ReactDOM.render( (
+      <Router >
+          <Route path="/" component={App}>
+             <IndexRoute component={BookClubApp} />
+             <Route path="login" component ={Login} />
+              <Route path="register" component ={Register} />
+          </Route>
+        </Router>
+    ),
       document.getElementById('mount-point')
     );
+
+
+
