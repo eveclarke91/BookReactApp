@@ -32,10 +32,11 @@ var _ = require('lodash') ;
 
     var RegisterPage = React.createClass({
             getInitialState: function() {
-               return { name: '', email: '', password: '', confirm: ''};
+               return { name: '', email: '', password: '', confirm: '', message: ''};
             },
             addNewLogin: function(n, e, p){
                 api.add(n, e, p);
+                this.setState({message: 'Thank you for registering, proceed to Home page.'})
                 this.setState({name: '', email: '', password: '', confirm: ''});
             },
         
@@ -66,6 +67,11 @@ var _ = require('lodash') ;
                         <h1>Register Page</h1>
 
                             <div className="row">
+                            <div className="col-md-6 col-md-offset-3">
+                            {this.state.message}
+                            </div>
+                            </div>
+                            <div className="row">
                                 <div className="col-md-6 col-md-offset-3">
                                     <form>
                                     <div className="form-group">
@@ -89,11 +95,7 @@ var _ = require('lodash') ;
                                     </form>
                                 </div>
                             </div>
-                            <div className="row">
-                                <div className="col-md-6 col-md-offset-3">
-                                    <LoginList />
-                                </div>
-                            </div>
+                            
                         </div>
                     );
           }

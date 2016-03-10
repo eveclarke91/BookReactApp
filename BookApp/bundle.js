@@ -11,6 +11,7 @@
     var Register = require('./register.js' ).RegisterPage;
     var books = require('./data').allBooks ;
     var _ = require('lodash'); 
+    var browserHistory = Router.browserHistory;
 
     var SelectBox = React.createClass({displayName: "SelectBox",
       handleChange : function(e, type,value) {
@@ -59,6 +60,9 @@
        });
 
      var FilteredBookList = React.createClass({displayName: "FilteredBookList",
+      getInitialState : function() {
+          return {};
+      },
           render: function(){
               var displayedBooks = this.props.books.map(function(book) {
                   return React.createElement(BookItem, {key: book.isbn, book: book}) ;
@@ -104,6 +108,14 @@
       }
     });
 
+ var BookClub = React.createClass({displayName: "BookClub",
+      render: function(){
+          return (
+                React.createElement(BookClubApp, {books: books})
+          );
+      }
+    });
+
 
  var App = React.createClass({displayName: "App",
       render : function() {
@@ -117,16 +129,21 @@
     });
 
     ReactDOM.render( (
-      React.createElement(Router, null, 
+      React.createElement(Router, {history: browserHistory}, 
           React.createElement(Route, {path: "/", component: App}, 
-             React.createElement(IndexRoute, {component: BookClubApp}), 
-             React.createElement(Route, {path: "login", component: Login}), 
+             React.createElement(IndexRoute, {component: BookClub}), 
+              React.createElement(Route, {path: "login", component: Login}), 
               React.createElement(Route, {path: "register", component: Register})
           )
         )
     ),
       document.getElementById('mount-point')
     );
+/*
+    ReactDOM.render(
+      <BookClubApp books={books} />,
+      document.getElementById('mount-point')
+    );*/
 },{"./data":2,"./login.js":3,"./loginAPI":4,"./register.js":5,"lodash":53,"react":218,"react-dom":55,"react-router":83}],2:[function(require,module,exports){
 var allBooks = 
                   [ 
@@ -191,55 +208,138 @@ var allBooks =
 
 },{}],3:[function(require,module,exports){
 var React = require('react')
+var api =  require ('./loginAPI').api;
+var loggedinapi =  require ('./loginAPI').loggedinapi;
+var Router = require('react-router');
+var browserHistory = Router.browserHistory;
+//import { browserHistory } from 'react-router'
+
+
+
 
     var LoginPage = React.createClass({displayName: "LoginPage",
+        //mixins: [Navigation],
+        getInitialState: function() {
+               return {email: '', password: '', message: ''};
+            },
+           
+           
+            handleEmailChange: function(e) {
+                this.setState({email : e.target.value});
+            },
+            handlePasswordChange: function(e) {
+                this.setState({password : e.target.value});
+            },
+            
+
+            verifyLogin: function(e, p) {
+               var valid = api.verify(e, p);
+
+               if(valid){
+                var id = api.getid(e);
+                loggedinapi.login(id,e,p);
+                window.location = "http://localhost:8080/BookApp/";// cant figure out this redirecting shit
+                //<Redirect from="/login" to="/register"/>
+                //this.transitionTo('/register');
+
+                //mixins: [ History ],
+                //navigateToHelpPage () {
+                    //this.history.pushState(null, `/register`);
+                //}
+                //Router.browserHistory.push('BookApp/#/register');
+                //browserHistory.push('BookApp/#/register');
+
+               }else{
+                this.setState({message: 'Login not found'});
+
+               }
+
+
+            },
+
+
+
+            onSubmit : function(e) {
+                e.preventDefault();
+                var email = this.state.email.trim();
+                var password = this.state.password.trim();
+                this.verifyLogin(email, password);
+            },
           render: function(){
-              
                 return (
                         React.createElement("div", null, 
-                        React.createElement("h1", null, "Login Page")
+                        React.createElement("h1", null, "Login Page"), 
+
+                            React.createElement("div", {className: "row"}, 
+                            React.createElement("div", {className: "col-md-6 col-md-offset-3"}, 
+                            this.state.message
+                            )
+                            ), 
+                            React.createElement("div", {className: "row"}, 
+                                React.createElement("div", {className: "col-md-6 col-md-offset-3"}, 
+                                    React.createElement("form", null, 
+                                      React.createElement("div", {className: "form-group"}, 
+                                        React.createElement("label", {htmlFor: "Email1"}, "Email address"), 
+                                        React.createElement("input", {type: "email", className: "form-control", id: "Email1", placeholder: "Email", onChange: this.handleEmailChange})
+                                      ), 
+                                      React.createElement("div", {className: "form-group"}, 
+                                        React.createElement("label", {htmlFor: "Password1"}, "password"), 
+                                        React.createElement("input", {type: "password", className: "form-control", id: "Password1", placeholder: "Password", onChange: this.handlePasswordChange})
+                                      ), 
+                                      React.createElement("button", {type: "submit", className: "btn btn-default", onClick: this.onSubmit}, "submit")
+                                    )
+                                )
+                            )
                         )
                     );
           }
         });
 
+
     exports.LoginPage = LoginPage;
 
-},{"react":218}],4:[function(require,module,exports){
+},{"./loginAPI":4,"react":218,"react-router":83}],4:[function(require,module,exports){
 var _ = require('lodash');
 
+    var loggedin = [{
+      id: 0 ,
+      name : '',
+      email : ''           
+    }];
+
     var logins = [
-             {  id: 1 ,
-                name : 'Ian Pan',
-                email : 'ip@gmail.com',
-                password : 'password'
-                 
-              },
-             {  id: 2 ,
-                name : 'Dave Don',
-                email : 'dd@gmail.com',
-                password : 'password'
-                 
-              },
-              { 
-                id: 3,
-                name : 'Cho Lane',
-                email : 'cl@gmail.com',
-                password : 'password'
-              },
-              { 
-                id: 4,
-                name : 'Penny Pen',
-                email : 'pp@gmail.com',
-                password : 'password'
-              }
-          ] ;
+       {  id: 1 ,
+          name : 'Ian Pan',
+          email : 'ip@gmail.com',
+          password : 'password'
+           
+        },
+       {  id: 2 ,
+          name : 'Dave Don',
+          email : 'dd@gmail.com',
+          password : 'password'
+           
+        },
+        { 
+          id: 3,
+          name : 'Cho Lane',
+          email : 'cl@gmail.com',
+          password : 'password'
+        },
+        { 
+          id: 4,
+          name : 'Penny Pen',
+          email : 'pp@gmail.com',
+          password : 'password'
+        }
+    ] ;
 
 
      var loginAPI = {
           getAll : function() {
               return logins;
           },
+
          add : function(n,e,p) {
               var id = 1 ;
               var last = _.last(logins) ;
@@ -250,26 +350,49 @@ var _ = require('lodash');
               logins.push({ 'id': id,  
                        name: n, email : e, password: p}) ;
 
-              }
-         
+              },
 
-/*getLogin : function(e, p) {
-               var result = null ;
-                 var index = _.findIndex(posts, function(post) {
-                        return post.id == id;
+          getid: function(e){
+            var index = _.findIndex(logins, function(login) {
+              return login.email == e;
+            });
+            return logins[index].id; 
+          },
+
+          verify: function(e,p){
+            var index = _.findIndex(logins, function(login) {
+                        return login.email == e;
                       } );      
-                   if (index != -1) {                 
-                      result = posts[index];
-                      }
-              return result ;
-              }*/
-        
+             if (index != -1) {              
+                if (logins[index].password == p){
+                  return true;
+                }else{
+                  return false;
+                }            
+            }else{
+              return false;
+            }
+        }
+    }
+    var loggedinAPI = {
+          getLoggedIn : function() {
+            if(loggedin[0].id > 0){
+              return true;
+            }else{
+              return false;
+            }
+          },
 
-             
-          }
+         login: function(i,n,e) {
+            loggedin[0].id = i;
+            loggedin[0].name = n;
+            loggedin[0].email = e;
+          },          
+    }
 
 
     exports.api = loginAPI ;
+    exports.loggedinapi = loggedinAPI ;
 
 },{"lodash":53}],5:[function(require,module,exports){
 var api =  require ('./loginAPI').api;
@@ -306,10 +429,11 @@ var _ = require('lodash') ;
 
     var RegisterPage = React.createClass({displayName: "RegisterPage",
             getInitialState: function() {
-               return { name: '', email: '', password: '', confirm: ''};
+               return { name: '', email: '', password: '', confirm: '', message: ''};
             },
             addNewLogin: function(n, e, p){
                 api.add(n, e, p);
+                this.setState({message: 'Thank you for registering, proceed to Home page.'})
                 this.setState({name: '', email: '', password: '', confirm: ''});
             },
         
@@ -340,6 +464,11 @@ var _ = require('lodash') ;
                         React.createElement("h1", null, "Register Page"), 
 
                             React.createElement("div", {className: "row"}, 
+                            React.createElement("div", {className: "col-md-6 col-md-offset-3"}, 
+                            this.state.message
+                            )
+                            ), 
+                            React.createElement("div", {className: "row"}, 
                                 React.createElement("div", {className: "col-md-6 col-md-offset-3"}, 
                                     React.createElement("form", null, 
                                     React.createElement("div", {className: "form-group"}, 
@@ -362,12 +491,8 @@ var _ = require('lodash') ;
                                       React.createElement("button", {type: "submit", className: "btn btn-default", onClick: this.onSubmit}, "submit")
                                     )
                                 )
-                            ), 
-                            React.createElement("div", {className: "row"}, 
-                                React.createElement("div", {className: "col-md-6 col-md-offset-3"}, 
-                                    React.createElement(LoginList, null)
-                                )
                             )
+                            
                         )
                     );
           }

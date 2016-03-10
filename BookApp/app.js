@@ -10,6 +10,8 @@
     var Register = require('./register.js' ).RegisterPage;
     var books = require('./data').allBooks ;
     var _ = require('lodash'); 
+    var browserHistory = Router.browserHistory;
+    var loggedinapi =  require ('./loginAPI').loggedinapi;
 
     var SelectBox = React.createClass({
       handleChange : function(e, type,value) {
@@ -58,6 +60,9 @@
        });
 
      var FilteredBookList = React.createClass({
+      getInitialState : function() {
+          return {};
+      },
           render: function(){
               var displayedBooks = this.props.books.map(function(book) {
                   return <BookItem key={book.isbn} book={book} /> ;
@@ -103,6 +108,14 @@
       }
     });
 
+ var BookClub = React.createClass({
+      render: function(){
+          return (
+                <BookClubApp books={books} />
+          );
+      }
+    });
+
 
  var App = React.createClass({
       render : function() {
@@ -116,16 +129,21 @@
     });
 
     ReactDOM.render( (
-      <Router >
+      <Router history={browserHistory} >
           <Route path="/" component={App}>
-             <IndexRoute component={BookClubApp} />
-             <Route path="login" component ={Login} />
+             <IndexRoute component={BookClub} />
+              <Route path="login" component ={Login} />
               <Route path="register" component ={Register} />
           </Route>
         </Router>
     ),
       document.getElementById('mount-point')
     );
+/*
+    ReactDOM.render(
+      <BookClubApp books={books} />,
+      document.getElementById('mount-point')
+    );*/
 
 
 
