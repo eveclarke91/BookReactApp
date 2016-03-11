@@ -5,13 +5,18 @@
     var Route = ReactRouter.Route
     var Link = ReactRouter.Link
     var IndexRoute = ReactRouter.IndexRoute
-    var loginapi =  require ('./loginAPI').api;
-    var Login = require('./login.js' ).LoginPage;
-    var Register = require('./register.js' ).RegisterPage;
-    var books = require('./data').allBooks ;
-    var _ = require('lodash'); 
     var browserHistory = Router.browserHistory;
+
+    var loginapi =  require ('./loginAPI').api;
     var loggedinapi =  require ('./loginAPI').loggedinapi;
+
+    var Login = require('./login.js' ).LoginPage;
+    var Register = require('./register.js' ).RegisterPage;    
+    var BookDetail = require('./bookDetail.js' ).BookDetailPage;
+    var Comment = require('./comment.js').CommentPage;
+
+    var Books = require('./data').allBooks ;    
+    var _ = require('lodash');    
 
     var SelectBox = React.createClass({
       handleChange : function(e, type,value) {
@@ -46,14 +51,14 @@
       render: function(){
             return (
                 <li className="thumbnail book-listing">
-                <div>
+                
                   <Link to={ '/books/' + this.props.book.isbn} className="thumb">
                        <img src={this.props.book.imageUrl} /> </Link>
-                </div>
-                <div>
+                
+                
                   <Link to={ '/books/' + this.props.book.isbn}> {this.props.book.title} {this.props.book.author}</Link>
                   <p>{this.props.book.description}</p>
-                  </div>
+                  
                 </li>
                ) ;
           }
@@ -89,17 +94,20 @@
               }
       }, 
       render: function(){
-        console.log('Criteria: Search= ' + this.state.search + ' ; Sort= ' + this.state.sort);
-           var filteredList = this.props.books ;
+            var list = Books.filter(function(b) {
+                  return b.title.toLowerCase().search(this.state.search.toLowerCase() ) != -1 ;
+                }.bind(this) );
+          var filteredList = _.sortBy(list, this.state.sort);
           return (
                 <div className="view-container">
                 <div className="view-frame">
                    <div className="container-fluid">
                    <div className="row">
-                       <SelectBox onUserInput={this.handleChange } 
+                      <SelectBox onUserInput={this.handleChange } 
                              filterText={this.state.search} 
                              sort={this.state.sort} />
                        <FilteredBookList books={filteredList} />
+      
                   </div> 
                   </div>                   
                 </div>
@@ -108,13 +116,13 @@
       }
     });
 
- var BookClub = React.createClass({
+ /*var BookClub = React.createClass({
       render: function(){
           return (
                 <BookClubApp books={books} />
           );
       }
-    });
+    });*/
 
 
  var App = React.createClass({
@@ -129,11 +137,13 @@
     });
 
     ReactDOM.render( (
-      <Router history={browserHistory} >
+      <Router>
           <Route path="/" component={App}>
-             <IndexRoute component={BookClub} />
+             <IndexRoute component={BookClubApp} />
+              <Route path="books/:isbn" component ={BookDetail} />
+              <Route path="comment" component ={Comment} />              
               <Route path="login" component ={Login} />
-              <Route path="register" component ={Register} />
+              <Route path="register" component ={Register} /> 
           </Route>
         </Router>
     ),
