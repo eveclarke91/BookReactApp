@@ -4,32 +4,7 @@ var _ = require('lodash') ;
 
 
 
-    var LoginList = React.createClass({
-        render : function() {
-          var logins = api.getAll();
-          var items = logins.map(function(login,index) {
-                 return <LoginItem key={index} login={login} /> ;
-             }.bind(this) )
-          return (
-            <div>
-                  {items}
-                  </div>
-            );
-        }
-   }) ;
-        
-        var LoginItem = React.createClass({
-                render : function() {
-                  return (
-                        <div >
-                          <p>{this.props.login.name}</p>
-                          <p>{this.props.login.email}</p>
-                          <p>{this.props.login.password}</p>
-                        </div>  
-                  );
-                }
-           }) ;        
-
+   
     var RegisterPage = React.createClass({
             getInitialState: function() {
                return { name: '', email: '', password: '', confirm: '', message: ''};

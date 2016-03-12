@@ -47,7 +47,6 @@ var _ = require('lodash');
                 allComments.push({ 'id': element.id, userID: element.userID, bookISBN : element.bookISBN, date: element.date, content: element.content});
               }
             })
-            console.log(allComments);
 
               return allComments;
           },
@@ -58,8 +57,8 @@ var _ = require('lodash');
               if (last) {
                  id = last.id + 1 ;
               }
-                  console.log( 'Id =  ' + id);
               comments.push({ 'id': id, userID: u, bookISBN : i, date: d, content: c}) ;
+              console.log(comments[id-1]);
 
               },
 

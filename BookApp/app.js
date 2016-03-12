@@ -38,7 +38,7 @@
                  Sort by:
                   <select id="sort" value={this.props.order } 
                          onChange={this.handleSortChange} >
-                     <option value="name">Alphabetical</option>
+                     <option value="title">Alphabetical</option>
                      <option value="age">Newest</option>
                  </select>
              </div>

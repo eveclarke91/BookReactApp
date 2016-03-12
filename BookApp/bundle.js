@@ -132,7 +132,7 @@ process.umask = function() { return 0; };
                  "Sort by:", 
                   React.createElement("select", {id: "sort", value: this.props.order, 
                          onChange: this.handleSortChange}, 
-                     React.createElement("option", {value: "name"}, "Alphabetical"), 
+                     React.createElement("option", {value: "title"}, "Alphabetical"), 
                      React.createElement("option", {value: "age"}, "Newest")
                  )
              )
@@ -254,6 +254,7 @@ process.umask = function() { return 0; };
  var bookAPI = require('./data').bookAPI;
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
+ var userDetails = require('./loginAPI').loggedin;
 
 
     var BookDetail = React.createClass({displayName: "BookDetail",
@@ -301,19 +302,13 @@ process.umask = function() { return 0; };
                             React.createElement("td", null, "Genre"), 
                             React.createElement("td", null, bookdetails.genre)
                             )
-                          ), 
-
-                          React.createElement("form", {className: "comment-form"}, 
-                            React.createElement("div", {className: "form-group"}, 
-                            React.createElement("label", {htmlFor: "comment-section", className: "col-sm-2 control-label"}, "Leave a comment..."), 
-                            React.createElement("textarea", {className: "form-control", name: "comment-section", rows: "3"})
-                            ), 
-                            React.createElement("button", {type: "submit", className: "btn btn-default"}, "GO")
                           )
+                          
                         )
                       ), 
                       React.createElement("div", {className: "row"}, 
-                        React.createElement(CommentArea, {isbn: bookdetails.isbn})
+
+                        React.createElement(CommentForm, {isbn: bookdetails.isbn})
                       )
                     )
 
@@ -347,6 +342,7 @@ process.umask = function() { return 0; };
                 "Comment Section"
               ), 
               React.createElement("div", null, "No Comments")
+
             ));
 
         if(items){
@@ -380,6 +376,75 @@ process.umask = function() { return 0; };
           );
        }
     });
+
+
+    var CommentForm = React.createClass({displayName: "CommentForm",
+      getInitialState: function() {
+               return { comment: '', message: ''};
+            },
+            addNewComment: function(c){
+                var u = userDetails[0].id;
+                console.log(u);
+                var i = this.props.isbn;
+                console.log(i);
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+
+                if(dd<10) {
+                    dd='0'+dd
+                } 
+                if(mm<10) {
+                    mm='0'+mm
+                } 
+                var d = dd+'/'+mm+'/'+yyyy;
+                console.log(d);
+                console.log(c);
+               
+
+                commentAPI.add(u, i, d, c);
+                this.setState({message: 'Thank you.'})
+                this.setState({comment: ''});
+            },
+
+             handleCommentChange: function(e) {
+                this.setState({comment : e.target.value});
+            },
+
+            onSubmit : function(e) {
+                e.preventDefault();
+                var comment = this.state.comment.trim();
+                this.addNewComment(comment);
+            },
+
+      render: function() {
+        return(
+          React.createElement("div", null, 
+          React.createElement("div", {className: "row"}, 
+          React.createElement("div", {className: "col-md-12"}, 
+          this.state.message
+          )
+          ), 
+           React.createElement("form", {className: "comment-form"}, 
+            React.createElement("div", {className: "form-group"}, 
+            React.createElement("label", {htmlFor: "comment-section", className: "col-sm-2 control-label"}, "Leave a comment..."), 
+            React.createElement("textarea", {className: "form-control", name: "comment-section", rows: "3", onChange: this.handleCommentChange})
+            ), 
+            React.createElement("button", {type: "submit", className: "btn btn-default", onClick: this.onSubmit}, "GO")
+          ), 
+          React.createElement(CommentArea, {isbn: this.props.isbn})
+          )
+
+          );
+
+
+      }
+
+
+
+    })
 
     
 
@@ -447,7 +512,6 @@ var _ = require('lodash');
                 allComments.push({ 'id': element.id, userID: element.userID, bookISBN : element.bookISBN, date: element.date, content: element.content});
               }
             })
-            console.log(allComments);
 
               return allComments;
           },
@@ -458,8 +522,8 @@ var _ = require('lodash');
               if (last) {
                  id = last.id + 1 ;
               }
-                  console.log( 'Id =  ' + id);
               comments.push({ 'id': id, userID: u, bookISBN : i, date: d, content: c}) ;
+              console.log(comments[id-1]);
 
               },
 
@@ -674,7 +738,7 @@ var browserHistory = Router.browserHistory;
 var _ = require('lodash');
 
     var loggedin = [{
-      id: 0 ,
+      id: 1 ,
       name : '',
       email : ''           
     }];
@@ -772,6 +836,7 @@ var _ = require('lodash');
 
     exports.api = loginAPI ;
     exports.loggedinapi = loggedinAPI ;
+    exports.loggedin = loggedin;
 
 },{"lodash":58}],9:[function(require,module,exports){
 var api =  require ('./loginAPI').api;
@@ -780,32 +845,7 @@ var _ = require('lodash') ;
 
 
 
-    var LoginList = React.createClass({displayName: "LoginList",
-        render : function() {
-          var logins = api.getAll();
-          var items = logins.map(function(login,index) {
-                 return React.createElement(LoginItem, {key: index, login: login}) ;
-             }.bind(this) )
-          return (
-            React.createElement("div", null, 
-                  items
-                  )
-            );
-        }
-   }) ;
-        
-        var LoginItem = React.createClass({displayName: "LoginItem",
-                render : function() {
-                  return (
-                        React.createElement("div", null, 
-                          React.createElement("p", null, this.props.login.name), 
-                          React.createElement("p", null, this.props.login.email), 
-                          React.createElement("p", null, this.props.login.password)
-                        )  
-                  );
-                }
-           }) ;        
-
+   
     var RegisterPage = React.createClass({displayName: "RegisterPage",
             getInitialState: function() {
                return { name: '', email: '', password: '', confirm: '', message: ''};

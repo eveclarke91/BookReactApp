@@ -1,7 +1,7 @@
 var _ = require('lodash');
 
     var loggedin = [{
-      id: 0 ,
+      id: 1 ,
       name : '',
       email : ''           
     }];
@@ -99,3 +99,4 @@ var _ = require('lodash');
 
     exports.api = loginAPI ;
     exports.loggedinapi = loggedinAPI ;
+    exports.loggedin = loggedin;

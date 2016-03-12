@@ -3,6 +3,7 @@
  var bookAPI = require('./data').bookAPI;
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
+ var userDetails = require('./loginAPI').loggedin;
 
 
     var BookDetail = React.createClass({
@@ -51,18 +52,12 @@
                             <td>{bookdetails.genre}</td>
                             </tr>
                           </table>
-
-                          <form className = "comment-form">
-                            <div className="form-group">
-                            <label htmlFor="comment-section" className="col-sm-2 control-label">Leave a comment...</label>
-                            <textarea className="form-control" name = "comment-section" rows="3"></textarea>
-                            </div>
-                            <button type="submit" className="btn btn-default">GO</button>
-                          </form>
+                          
                         </div>
                       </div>
                       <div className = "row" >
-                        <CommentArea isbn={bookdetails.isbn}/>
+
+                        <CommentForm isbn = {bookdetails.isbn} />
                       </div>
                     </div>
 
@@ -96,6 +91,7 @@
                 Comment Section
               </div>
               <div>No Comments</div>
+
             </div>);
 
         if(items){
@@ -129,6 +125,75 @@
           );
        }
     });
+
+
+    var CommentForm = React.createClass({
+      getInitialState: function() {
+               return { comment: '', message: ''};
+            },
+            addNewComment: function(c){
+                var u = userDetails[0].id;
+                console.log(u);
+                var i = this.props.isbn;
+                console.log(i);
+
+                var today = new Date();
+                var dd = today.getDate();
+                var mm = today.getMonth()+1; //January is 0!
+                var yyyy = today.getFullYear();
+
+                if(dd<10) {
+                    dd='0'+dd
+                } 
+                if(mm<10) {
+                    mm='0'+mm
+                } 
+                var d = dd+'/'+mm+'/'+yyyy;
+                console.log(d);
+                console.log(c);
+               
+
+                commentAPI.add(u, i, d, c);
+                this.setState({message: 'Thank you.'})
+                this.setState({comment: ''});
+            },
+
+             handleCommentChange: function(e) {
+                this.setState({comment : e.target.value});
+            },
+
+            onSubmit : function(e) {
+                e.preventDefault();
+                var comment = this.state.comment.trim();
+                this.addNewComment(comment);
+            },
+
+      render: function() {
+        return(
+          <div>
+          <div className="row">
+          <div className="col-md-12">
+          {this.state.message}
+          </div>
+          </div>
+           <form className = "comment-form">
+            <div className="form-group">
+            <label htmlFor="comment-section" className="col-sm-2 control-label">Leave a comment...</label>
+            <textarea className="form-control" name = "comment-section" rows="3" onChange={this.handleCommentChange}></textarea>
+            </div>
+            <button type="submit" className="btn btn-default" onClick={this.onSubmit}>GO</button>
+          </form>
+          <CommentArea isbn={this.props.isbn}/>
+          </div>
+
+          );
+
+
+      }
+
+
+
+    })
 
     
 
