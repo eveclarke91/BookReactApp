@@ -105,3 +105,31 @@ h1 {
   margin-top: 10px;
 
 }
+
+.comment-review {
+  font-size: 24px;
+  background-color: #000;
+  color:#fff;
+}
+
+.commentItem{
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #000;
+}
+.commentBody{
+  font-size: 20px;
+}
+.commentHeader{
+  color:#ccc;
+}
+.userName{
+  margin-right: 15px;
+}  
+.rating{
+  margin-right: 15px;
+}
+.reviewDate{
+
+}

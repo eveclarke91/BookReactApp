@@ -58,6 +58,13 @@ var _ = require('lodash');
             return logins[index].id; 
           },
 
+          getName: function(i){
+            var index = _.findIndex(logins, function(login) {
+              return login.id == i;
+            });
+            return logins[index].name; 
+          },
+          
           verify: function(e,p){
             var index = _.findIndex(logins, function(login) {
                         return login.email == e;
