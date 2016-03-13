@@ -1,8 +1,5 @@
 /* app css stylesheet */
 
-body {
-  padding-top: 20px;
-}
 
 .books {
   list-style: none;
@@ -16,71 +13,66 @@ body {
   width: 100px;
 }
 
-.books li {
-  clear: both;
-  padding-top: 15px;
-}
-p{
-  overflow:auto;
-}
-
-/** Detail View **/
-img.book {
-  float: left;
-  border: 1px solid black;
-  margin-right: 3em;
-  margin-bottom: 2em;
-  background-color: white;
-  padding: 2em;
-  height: 400px;
-  width: 400px;
-}
-
-ul.book-thumbs {
-  margin: 0;
-  list-style: none;
-}
-
-ul.book-thumbs li {
-  border: 1px solid black;
-  display: inline-block;
-  margin: 1em;
-  background-color: white;
-}
-
-ul.book-thumbs img {
-  height: 100px;
-  width: 100px;
-  padding: 1em;
-}
-
-ul.specs {
-  clear: both;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.specs > li{
-  display: inline-block;
-  width: 200px;
-  vertical-align: top;
-}
-
-ul.specs > li > span{
+.title-bar{
+  font-size: 32px;
+  text-align: center;
   font-weight: bold;
-  font-size: 1.2em;
+  background-color:#1B998A; 
+  color: #fff;
+  padding: 20px;
+  margin: 0;
+
+}  
+
+.search{
+  float:left;
+  padding:10px;
+  margin:10px;
+
 }
 
-ul.specs dt {
-  font-weight: bold;
+.sort{
+  float:left;
+  padding:10px;
+  margin:10px;
+
 }
 
-h1 {
-  border-bottom: 1px solid gray;
-}
 
 /*Book Detail */
+.book-container{
+  width: 100%;
+  min-width: 940px;
+}
+.book-thumb{
+  float:left;
+  width: 170px;
+
+}
+.book-body{
+  margin:0 175px;
+
+}
+.book-status{
+  float:right;
+  width:145px;
+
+}
+.book-title{
+  font-size: 24px;
+  text-decoration: none;
+  
+}
+.book-title a{
+  color: #F59506 !important;
+}
+.book-title a:hover{
+  text-decoration: none;
+}
+.book-author {
+  font-size: 16px;
+  color: #ccc;
+}
 
 .bookTitle {
   font-size: 24px;

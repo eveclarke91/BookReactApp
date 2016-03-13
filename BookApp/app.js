@@ -14,6 +14,10 @@
     var Register = require('./register.js' ).RegisterPage;    
     var BookDetail = require('./bookDetail.js' ).BookDetailPage;
     var Comment = require('./comment.js').CommentPage;
+    var shelfAPI = require('./bookShelfAPI.js').shelfAPI;
+    var userDetails = require('./loginAPI').loggedin;
+    var Shelf = require('./bookShelf.js').BookShelfPage;
+    var userDetails = require('./loginAPI').loggedin;
 
     var Books = require('./data').allBooks ;    
     var _ = require('lodash');    
@@ -31,39 +35,129 @@
       },
       render: function(){
            return (
-                <div className="col-md-10">
+                <div className="col-md-12">
+                <div className = "search">
                <input type="text" placeholder="Search" 
                           value={this.props.filterText}
                           onChange={this.handleTextChange} />
+               </div>
+               <div className = "sort">
                  Sort by:
                   <select id="sort" value={this.props.order } 
                          onChange={this.handleSortChange} >
                      <option value="title">Alphabetical</option>
                      <option value="age">Newest</option>
                  </select>
+                 </div>
              </div>
                );
           }
        });
 
 
+
     var BookItem = React.createClass({
       render: function(){
             return (
-                <li className="thumbnail book-listing">
+              <div className = "row thumbnail" >
+                <div className = "book-thumb">
+                  <Link to={ '/books/' + this.props.book.isbn}>
+                       <img src={this.props.book.imageUrl} width="140" /> </Link>
+                </div>                
                 
-                  <Link to={ '/books/' + this.props.book.isbn} className="thumb">
-                       <img src={this.props.book.imageUrl} /> </Link>
+                <div className = "book-status" >
+               <BookStatus isbn = {this.props.book.isbn} />
+                </div>
                 
-                
-                  <Link to={ '/books/' + this.props.book.isbn}> {this.props.book.title} {this.props.book.author}</Link>
+                <div className = "book-body" >
+                  <div className = "book-title"><Link to={ '/books/' + this.props.book.isbn}> {this.props.book.title} </Link></div>
+                  <div className = "book-author">{this.props.book.author}</div>
                   <p>{this.props.book.description}</p>
-                  
-                </li>
-               ) ;
+                </div>
+                </div>
+                 
+             
+                
+               
+               );
           }
        });
 
+
+
+  var BookStatus = React.createClass({
+       getInitialState: function() {
+               return { status: '', message: ''};
+            },
+            addNewStatus: function(s){
+                var u = userDetails[0].id;
+                
+                var i = this.props.isbn;
+               
+                shelfAPI.add(u, i, s);
+                this.setState({message: 'Book Added'})
+                this.setState({status: ''});
+            },
+
+             handleStatusChange: function(e) {
+                this.setState({status : e.target.value});
+                this.addNewStatus(e.target.value);
+            },
+
+            onStatusChange: function(e) {
+                e.preventDefault();
+                var comment = this.state.comment.trim();
+                this.addNewComment(comment);
+            },
+
+            render: function(){
+
+        return (
+                <div>
+                  <select id="select" onChange={this.handleStatusChange}>
+                     <option value="Read">Read</option>
+                     <option value="Want to Read">Want to Read</option>
+                     <option value="Currently Reading">Currently Reading</option>
+                 </select>
+             </div>
+
+        );
+
+    }
+
+
+  });
+
+
+
+ var ShelfStatus = React.createClass({
+
+  render: function(){
+    var id = userDetails[0].id;
+    var read = shelfAPI.getShelfBookStatus("Read" , id);
+    var toRead = shelfAPI.getShelfBookStatus("Want to read", id);
+    var reading = shelfAPI.getShelfBookStatus("Currently reading", id);
+
+
+        return (
+           <div>
+          <h1>Book Shelf</h1>
+          <div className = "shelf-list">
+          <li>Read({read.length})</li>
+          <li>Want to Read({toRead.length})</li>
+          <li>Currently Reading({reading.length})</li>
+          <li>
+          <Link to={ '/shelf/Read'}> Go to book shelf  </Link>
+          </li>
+          </div>
+          </div>
+
+
+);
+
+}
+
+ });
      var FilteredBookList = React.createClass({
       getInitialState : function() {
           return {};
@@ -73,11 +167,16 @@
                   return <BookItem key={book.isbn} book={book} /> ;
               }) ;
               return (
+                <div className = "shelf-content">
                       <div className="col-md-10">
                         <ul className="books">
                             {displayedBooks}
                         </ul>
                       </div>
+                      <div className = "col-md-2" >
+                <ShelfStatus/>
+                </div>
+                </div>
                   ) ;
           }
       });
@@ -107,7 +206,7 @@
                              filterText={this.state.search} 
                              sort={this.state.sort} />
                        <FilteredBookList books={filteredList} />
-      
+
                   </div> 
                   </div>                   
                 </div>
@@ -116,20 +215,12 @@
       }
     });
 
- /*var BookClub = React.createClass({
-      render: function(){
-          return (
-                <BookClubApp books={books} />
-          );
-      }
-    });*/
-
 
  var App = React.createClass({
       render : function() {
         return (
           <div>
-            <h1>Book Club App</h1>
+            <div className = "title-bar" > BookReads</div>
             {this.props.children}
           </div>
         )
@@ -144,16 +235,10 @@
               <Route path="comment" component ={Comment} />              
               <Route path="login" component ={Login} />
               <Route path="register" component ={Register} /> 
+              <Route path="shelf/:status" component ={Shelf} />
           </Route>
         </Router>
     ),
       document.getElementById('mount-point')
     );
-/*
-    ReactDOM.render(
-      <BookClubApp books={books} />,
-      document.getElementById('mount-point')
-    );*/
-
-
 

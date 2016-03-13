@@ -3,7 +3,7 @@
  var bookAPI = require('./data').bookAPI;
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
- var userDetails = require('./loginAPI').loggedin;
+ 
 
 
     var BookDetail = React.createClass({
@@ -133,9 +133,7 @@
             },
             addNewComment: function(c){
                 var u = userDetails[0].id;
-                console.log(u);
                 var i = this.props.isbn;
-                console.log(i);
 
                 var today = new Date();
                 var dd = today.getDate();
@@ -149,10 +147,7 @@
                     mm='0'+mm
                 } 
                 var d = dd+'/'+mm+'/'+yyyy;
-                console.log(d);
-                console.log(c);
                
-
                 commentAPI.add(u, i, d, c);
                 this.setState({message: 'Thank you.'})
                 this.setState({comment: ''});
