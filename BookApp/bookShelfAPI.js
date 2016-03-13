@@ -10,6 +10,47 @@ var _ = require('lodash');
           dateAdded: '02/05/16'
           
            
+        },
+
+        {  
+          id:2,
+          userID: 1 ,
+          bookISBN : '111-223-23-22',
+          status : 'Reading',
+          dateAdded: '11/03/14'
+          
+           
+        },
+
+
+        {  
+          id:3,
+          userID: 1 ,
+          bookISBN : '922-998-34-21',
+          status : 'Reading',
+          dateAdded: '10/03/16'
+          
+           
+        },
+
+        {  
+          id:4,
+          userID: 1 ,
+          bookISBN : '144-344-34-44',
+          status : 'Read',
+          dateAdded: '02/05/16'
+          
+           
+        },
+
+        {  
+          id:5,
+          userID: 1 ,
+          bookISBN : '332-311-31-21',
+          status : 'Read',
+          dateAdded: '01/01/16'
+          
+           
         }
            
 
@@ -71,6 +112,22 @@ var _ = require('lodash');
 
               },
 
+
+
+         remove : function(i){
+          var e;
+          shelf.map(function(element){
+            if(element.id == i){
+            e = element;
+              }
+            })
+            var i = shelf.indexOf(e);
+            shelf.splice(i, 1);
+          },
+         
+
+
+      
           
     }
     

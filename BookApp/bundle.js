@@ -67,7 +67,7 @@
                 ), 
                 
                 React.createElement("div", {className: "book-status"}, 
-               React.createElement(BookStatus, {isbn: this.props.book.isbn})
+               React.createElement(BookStatus, {isbn: this.props.book.isbn, statusUpdater: this.props.statusHandler})
                 ), 
                 
                 React.createElement("div", {className: "book-body"}, 
@@ -87,39 +87,30 @@
 
 
   var BookStatus = React.createClass({displayName: "BookStatus",
-       getInitialState: function() {
+            getInitialState: function() {
                return { status: '', message: ''};
             },
-            addNewStatus: function(s){
-                var u = userDetails[0].id;
-                
-                var i = this.props.isbn;
-               
-                shelfAPI.add(u, i, s);
-                this.setState({message: 'Book Added'})
-                this.setState({status: ''});
-            },
-
-             handleStatusChange: function(e) {
+            addNewStatus: function(e){
                 this.setState({status : e.target.value});
-                this.addNewStatus(e.target.value);
-            },
-
-            onStatusChange: function(e) {
-                e.preventDefault();
-                var comment = this.state.comment.trim();
-                this.addNewComment(comment);
+                this.setState({message: 'Book Updated'});
+                var u = userDetails[0].id;                
+                var i = this.props.isbn;
+                console.log("here1");
+                this.props.statusUpdater(u,i,e.target.value);
             },
 
             render: function(){
 
         return (
-                React.createElement("div", null, 
-                  React.createElement("select", {id: "select", onChange: this.handleStatusChange}, 
+              React.createElement("div", null, 
+                  React.createElement("select", {id: "select", onChange: this.addNewStatus}, 
+                     React.createElement("option", null, "Book Status"), 
                      React.createElement("option", {value: "Read"}, "Read"), 
-                     React.createElement("option", {value: "Want to Read"}, "Want to Read"), 
-                     React.createElement("option", {value: "Currently Reading"}, "Currently Reading")
-                 )
+                     React.createElement("option", {value: "toRead"}, "Want to Read"), 
+                     React.createElement("option", {value: "Reading"}, "Currently Reading")
+                 ), 
+                 React.createElement("div", {className: "bg-success"}, this.state.message)
+
              )
 
         );
@@ -136,8 +127,8 @@
   render: function(){
     var id = userDetails[0].id;
     var read = shelfAPI.getShelfBookStatus("Read" , id);
-    var toRead = shelfAPI.getShelfBookStatus("Want to read", id);
-    var reading = shelfAPI.getShelfBookStatus("Currently reading", id);
+    var toRead = shelfAPI.getShelfBookStatus("toRead", id);
+    var reading = shelfAPI.getShelfBookStatus("Reading", id);
 
 
         return (
@@ -160,29 +151,37 @@
 
  });
      var FilteredBookList = React.createClass({displayName: "FilteredBookList",
+      updateStatus: function(u, i, s) {
+        console.log("here2");
+        shelfAPI.add(u, i, s);
+        this.setState({});      
+      },
+      
       getInitialState : function() {
           return {};
       },
-          render: function(){
-              var displayedBooks = this.props.books.map(function(book) {
-                  return React.createElement(BookItem, {key: book.isbn, book: book}) ;
-              }) ;
-              return (
-                React.createElement("div", {className: "shelf-content"}, 
-                      React.createElement("div", {className: "col-md-10"}, 
-                        React.createElement("ul", {className: "books"}, 
-                            displayedBooks
-                        )
-                      ), 
-                      React.createElement("div", {className: "col-md-2"}, 
-                React.createElement(ShelfStatus, null)
-                )
-                )
-                  ) ;
-          }
+      render: function(){
+          var displayedBooks = this.props.books.map(function(book) {
+              return React.createElement(BookItem, {key: book.isbn, book: book, statusHandler: this.updateStatus}) ;
+          }.bind(this)) ;
+          return (
+            React.createElement("div", {className: "shelf-content"}, 
+                  React.createElement("div", {className: "col-md-10"}, 
+                    React.createElement("ul", {className: "books"}, 
+                        displayedBooks
+                    )
+                  ), 
+                  React.createElement("div", {className: "col-md-2"}, 
+            React.createElement(ShelfStatus, null)
+            )
+            )
+              ) ;
+      }
+
       });
 
     var BookClubApp = React.createClass({displayName: "BookClubApp",
+      
       getInitialState: function() {
            return { search: '', sort: 'title' } ;
       }, 
@@ -441,6 +440,8 @@
 },{"./commentsAPI":6,"./data":7,"./loginAPI":9,"react":224,"superagent":227}],3:[function(require,module,exports){
 var React = require('react')
 var Router = require('react-router');
+var ReactRouter = require('react-router')
+var Link = ReactRouter.Link
 var userDetails = require('./loginAPI').loggedin;
 var BookAPI = require('./data.js').bookAPI;
 var shelfAPI = require('./bookShelfAPI.js').shelfAPI;
@@ -448,24 +449,52 @@ var shelfAPI = require('./bookShelfAPI.js').shelfAPI;
 
 
 var BookShelfPage = React.createClass({displayName: "BookShelfPage",
+	remove : function(i) {
+		var bookId = i;
+        shelfAPI.remove(bookId);
+        console.log(bookId);
+        this.setState({}); 
+    },
+
+
 
 	render: function(){
 	 var status = this.props.params.status;
 	 var id = userDetails[0].id;
 	 var shelf = shelfAPI.getShelfBookStatus(status, id);
-    
+
+	 var read = shelfAPI.getShelfBookStatus("Read" , id);
+	 var toRead = shelfAPI.getShelfBookStatus("toRead", id);
+	 var reading = shelfAPI.getShelfBookStatus("Reading", id);
+	    
         if(shelf.length > 0 ){
           var shelfContent = shelf.map(function(shelfItem){
-            return React.createElement(BookShelfItem, {book: shelfItem, status: status});
+            return React.createElement(BookShelfItem, {book: shelfItem, status: status, removeHandler: this.remove});
           }.bind(this) )
+        }else{
+          var shelfContent = (
+          	React.createElement("tr", null, 
+			React.createElement("td", null), 
+			React.createElement("td", null, "Shelf Empty"), 
+			React.createElement("td", null), 
+			React.createElement("td", null), 
+			React.createElement("td", null), 
+			React.createElement("td", null)
+			)
+          	);
         }
 
 
 		return(
 			React.createElement("div", {className: "row"}, 
-			React.createElement("div", {className: "col-md-12"}, 
-			React.createElement("h1", null, " Test "), 
+			React.createElement("div", {className: "col-md-2"}, 
+			React.createElement("li", null, React.createElement(Link, {to:  '/shelf/Read'}, "Read(", read.length, ")")), 
+			React.createElement("li", null, React.createElement(Link, {to:  '/shelf/toRead'}, "Want to Read(", toRead.length, ")")), 
+			React.createElement("li", null, React.createElement(Link, {to:  '/shelf/Reading'}, "Currently Reading(", reading.length, ")"))
+			), 
+			React.createElement("div", {className: "col-md-10"}, 
 			React.createElement("table", {className: "table table-hover"}, 
+			React.createElement("thead", null, 
 			React.createElement("tr", null, 
 			React.createElement("th", null, "Cover"), 
 			React.createElement("th", null, "Title"), 
@@ -473,8 +502,11 @@ var BookShelfPage = React.createClass({displayName: "BookShelfPage",
 			React.createElement("th", null, "Rating"), 
 			React.createElement("th", null, "Shelves"), 
 			React.createElement("th", null, "Date Added")
+			)
 			), 
+			React.createElement("tbody", null, 
 			shelfContent
+			)
 	        )
 	        )
 			)
@@ -488,21 +520,40 @@ var BookShelfItem = React.createClass({displayName: "BookShelfItem",
 
 	render: function(){
 		var book = this.props.book;
+		var bookDetails = [];
 		var bookDetails = BookAPI.getBook(this.props.book.bookISBN);
 		return(
 
 
 			React.createElement("tr", null, 
-			React.createElement("td", null, React.createElement("img", {src: bookDetails.imageUrl, height: "180", width: "70"})), 
+			React.createElement("td", null, React.createElement("img", {src: bookDetails.imageUrl, height: "80", width: "50"})), 
 			React.createElement("td", null, bookDetails.title), 
 			React.createElement("td", null, bookDetails.author), 
 			React.createElement("td", null, bookDetails.rating), 
 			React.createElement("td", null, this.props.status), 
-			React.createElement("td", null, this.props.book.dateAdded)
+			React.createElement("td", null, this.props.book.dateAdded), 
+			React.createElement("td", null, React.createElement("button", {type: "button", className: "btn btn-warning"}, "Edit")), 
+			React.createElement("td", null, React.createElement(DeleteButton, {book: book, removeHandler: this.props.removeHandler}))
 			)
   
 
 		);
+	}
+
+});
+
+
+var DeleteButton = React.createClass({displayName: "DeleteButton",
+	handleRemove : function(id) {
+         this.props.removeHandler(id);
+    },
+	
+	render: function(){
+    return(
+		React.createElement("button", {type: "button", className: "btn btn-danger", onClick: () => this.handleRemove(this.props.book.id)}, "Remove")
+
+	);
+
 	}
 
 });
@@ -520,6 +571,47 @@ var _ = require('lodash');
           bookISBN : '211-555-12-12',
           status : 'Read',
           dateAdded: '02/05/16'
+          
+           
+        },
+
+        {  
+          id:2,
+          userID: 1 ,
+          bookISBN : '111-223-23-22',
+          status : 'Reading',
+          dateAdded: '11/03/14'
+          
+           
+        },
+
+
+        {  
+          id:3,
+          userID: 1 ,
+          bookISBN : '922-998-34-21',
+          status : 'Reading',
+          dateAdded: '10/03/16'
+          
+           
+        },
+
+        {  
+          id:4,
+          userID: 1 ,
+          bookISBN : '144-344-34-44',
+          status : 'Read',
+          dateAdded: '02/05/16'
+          
+           
+        },
+
+        {  
+          id:5,
+          userID: 1 ,
+          bookISBN : '332-311-31-21',
+          status : 'Read',
+          dateAdded: '01/01/16'
           
            
         }
@@ -583,6 +675,22 @@ var _ = require('lodash');
 
               },
 
+
+
+         remove : function(i){
+          var e;
+          shelf.map(function(element){
+            if(element.id == i){
+            e = element;
+              }
+            })
+            var i = shelf.indexOf(e);
+            shelf.splice(i, 1);
+          },
+         
+
+
+      
           
     }
     

@@ -66,7 +66,7 @@
                 </div>                
                 
                 <div className = "book-status" >
-               <BookStatus isbn = {this.props.book.isbn} />
+               <BookStatus isbn = {this.props.book.isbn} statusUpdater={this.props.statusHandler} />
                 </div>
                 
                 <div className = "book-body" >
@@ -86,39 +86,30 @@
 
 
   var BookStatus = React.createClass({
-       getInitialState: function() {
+            getInitialState: function() {
                return { status: '', message: ''};
             },
-            addNewStatus: function(s){
-                var u = userDetails[0].id;
-                
-                var i = this.props.isbn;
-               
-                shelfAPI.add(u, i, s);
-                this.setState({message: 'Book Added'})
-                this.setState({status: ''});
-            },
-
-             handleStatusChange: function(e) {
+            addNewStatus: function(e){
                 this.setState({status : e.target.value});
-                this.addNewStatus(e.target.value);
-            },
-
-            onStatusChange: function(e) {
-                e.preventDefault();
-                var comment = this.state.comment.trim();
-                this.addNewComment(comment);
+                this.setState({message: 'Book Updated'});
+                var u = userDetails[0].id;                
+                var i = this.props.isbn;
+                console.log("here1");
+                this.props.statusUpdater(u,i,e.target.value);
             },
 
             render: function(){
 
         return (
-                <div>
-                  <select id="select" onChange={this.handleStatusChange}>
+              <div>
+                  <select id="select" onChange={this.addNewStatus}>
+                     <option>Book Status</option>
                      <option value="Read">Read</option>
-                     <option value="Want to Read">Want to Read</option>
-                     <option value="Currently Reading">Currently Reading</option>
+                     <option value="toRead">Want to Read</option>
+                     <option value="Reading">Currently Reading</option>
                  </select>
+                 <div className="bg-success">{this.state.message}</div>
+
              </div>
 
         );
@@ -135,8 +126,8 @@
   render: function(){
     var id = userDetails[0].id;
     var read = shelfAPI.getShelfBookStatus("Read" , id);
-    var toRead = shelfAPI.getShelfBookStatus("Want to read", id);
-    var reading = shelfAPI.getShelfBookStatus("Currently reading", id);
+    var toRead = shelfAPI.getShelfBookStatus("toRead", id);
+    var reading = shelfAPI.getShelfBookStatus("Reading", id);
 
 
         return (
@@ -159,29 +150,37 @@
 
  });
      var FilteredBookList = React.createClass({
+      updateStatus: function(u, i, s) {
+        console.log("here2");
+        shelfAPI.add(u, i, s);
+        this.setState({});      
+      },
+      
       getInitialState : function() {
           return {};
       },
-          render: function(){
-              var displayedBooks = this.props.books.map(function(book) {
-                  return <BookItem key={book.isbn} book={book} /> ;
-              }) ;
-              return (
-                <div className = "shelf-content">
-                      <div className="col-md-10">
-                        <ul className="books">
-                            {displayedBooks}
-                        </ul>
-                      </div>
-                      <div className = "col-md-2" >
-                <ShelfStatus/>
-                </div>
-                </div>
-                  ) ;
-          }
+      render: function(){
+          var displayedBooks = this.props.books.map(function(book) {
+              return <BookItem key={book.isbn} book={book} statusHandler={this.updateStatus} /> ;
+          }.bind(this)) ;
+          return (
+            <div className = "shelf-content">
+                  <div className="col-md-10">
+                    <ul className="books">
+                        {displayedBooks}
+                    </ul>
+                  </div>
+                  <div className = "col-md-2" >
+            <ShelfStatus />
+            </div>
+            </div>
+              ) ;
+      }
+
       });
 
     var BookClubApp = React.createClass({
+      
       getInitialState: function() {
            return { search: '', sort: 'title' } ;
       }, 
