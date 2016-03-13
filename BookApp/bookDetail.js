@@ -3,6 +3,7 @@
  var bookAPI = require('./data').bookAPI;
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
+ var userDetails = require('./loginAPI').loggedin;
  
 
 

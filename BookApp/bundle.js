@@ -6,7 +6,6 @@
     var Route = ReactRouter.Route
     var Link = ReactRouter.Link
     var IndexRoute = ReactRouter.IndexRoute
-    var browserHistory = Router.browserHistory;
 
     var loginapi =  require ('./loginAPI').api;
     var loggedinapi =  require ('./loginAPI').loggedinapi;
@@ -220,20 +219,33 @@
       render : function() {
         return (
           React.createElement("div", null, 
-            React.createElement("div", {className: "title-bar"}, " BookReads"), 
+            React.createElement("div", {className: "title-bar"}, "BookReads"), 
+            React.createElement("div", {className: "navigation"}, 
+            React.createElement(Link, {to:  '/books'}, "Home"), 
+            React.createElement("div", {className: "clear"})
+            ), 
             this.props.children
           )
         )
       }
     });
 
+ var redirect = function someAuthCheck() {
+  if(!loggedinapi.getLoggedIn()){
+    console.log("incorrect Login");
+
+  }
+   
+}
+  
+
     ReactDOM.render( (
       React.createElement(Router, null, 
-          React.createElement(Route, {path: "/", component: App}, 
-             React.createElement(IndexRoute, {component: BookClubApp}), 
+          React.createElement(Route, {path: "/", component: App, onEnter: redirect}, 
+             React.createElement(IndexRoute, {component: Login}), 
               React.createElement(Route, {path: "books/:isbn", component: BookDetail}), 
               React.createElement(Route, {path: "comment", component: Comment}), 
-              React.createElement(Route, {path: "login", component: Login}), 
+              React.createElement(Route, {path: "books", component: BookClubApp}), 
               React.createElement(Route, {path: "register", component: Register}), 
               React.createElement(Route, {path: "shelf/:status", component: Shelf})
           )
@@ -247,6 +259,7 @@
  var bookAPI = require('./data').bookAPI;
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
+ var userDetails = require('./loginAPI').loggedin;
  
 
 
@@ -455,9 +468,11 @@ var BookShelfPage = React.createClass({displayName: "BookShelfPage",
         console.log(bookId);
         this.setState({}); 
     },
-
-
-
+    save: function(i,r,s){
+    	shelfAPI.edit(i, r ,s);
+    	this.setState({});
+    },
+    
 	render: function(){
 	 var status = this.props.params.status;
 	 var id = userDetails[0].id;
@@ -469,7 +484,7 @@ var BookShelfPage = React.createClass({displayName: "BookShelfPage",
 	    
         if(shelf.length > 0 ){
           var shelfContent = shelf.map(function(shelfItem){
-            return React.createElement(BookShelfItem, {book: shelfItem, status: status, removeHandler: this.remove});
+            return React.createElement(BookShelfItem, {book: shelfItem, status: status, removeHandler: this.remove, saveHandler: this.save});
           }.bind(this) )
         }else{
           var shelfContent = (
@@ -516,24 +531,108 @@ var BookShelfPage = React.createClass({displayName: "BookShelfPage",
 
 });
 
+
+
 var BookShelfItem = React.createClass({displayName: "BookShelfItem",
+	 getInitialState : function() {
+        return {
+            mode : '',
+            rating : '',
+            status : '',
+            id : ''
+
+        };                
+    },
+
+    editMode: function() {
+    	this.setState({mode : 'edit'})
+	},
+
+	handleRatingChange: function(e) {
+		this.setState({rating: e.target.value});
+	},
+
+	handleStatusChange: function(e){
+		this.setState({status: e.target.value});
+
+	},
+
+	handleSaveButton: function(){
+		var id = this.props.book.id;
+		var rating = this.state.rating;
+		var status = this.state.status;
+		this.setState({mode : ''});
+		this.props.saveHandler(id, rating, status);
+
+
+	},
 
 	render: function(){
 		var book = this.props.book;
 		var bookDetails = [];
 		var bookDetails = BookAPI.getBook(this.props.book.bookISBN);
+		var leftButtonHandler = this.editMode;
+
+		var statusWord = '';
+
+		if(this.props.status == "Read"){
+			statusWord = "After Reading";
+		}else if(this.props.status == "toRead"){
+			statusWord = "Want to Read";
+		}else {
+			statusWord = "Currently Reading";
+		}
+
+		var fields = [
+            React.createElement("td", null, React.createElement("img", {src: bookDetails.imageUrl, height: "80", width: "50"})),
+			React.createElement("td", null, bookDetails.title),
+			React.createElement("td", null, bookDetails.author),
+			React.createElement("td", null, book.rating),
+			React.createElement("td", null, statusWord),
+			React.createElement("td", null, book.dateAdded),
+			React.createElement("td", null, " ", React.createElement("input", {type: "button", className: "btn btn-warning ", 
+                                 value: "edit", 
+                                 onClick: leftButtonHandler})),
+			React.createElement("td", null, React.createElement(DeleteButton, {book: book, removeHandler: this.props.removeHandler}))
+                   ] ;
+
+		
+
+		if (this.state.mode == 'edit' ) {
+			var leftButtonHandler = this.handleSaveButton;
+
+            var fields = [
+            React.createElement("td", null, React.createElement("img", {src: bookDetails.imageUrl, height: "80", width: "50"})),
+			React.createElement("td", null, bookDetails.title),
+			React.createElement("td", null, bookDetails.author),
+			React.createElement("td", null, React.createElement("select", {id: "select", onChange: this.handleRatingChange}, 
+                     React.createElement("option", {value: "1"}, "1 Star"), 
+                     React.createElement("option", {value: "2"}, "2 Stars"), 
+                     React.createElement("option", {value: "3"}, "3 Stars"), 
+                     React.createElement("option", {value: "4"}, "4 Stars"), 
+                     React.createElement("option", {value: "5"}, "5 Stars")
+                 )),
+			React.createElement("td", {key: 'status'}, 
+			React.createElement("select", {id: "select", onChange: this.handleStatusChange}, 
+					React.createElement("option", {value: "Read", selected: true, disabled: true}, "Book Status"), 
+                     React.createElement("option", {value: "Read"}, "Read"), 
+                     React.createElement("option", {value: "toRead"}, "Want to Read"), 
+                     React.createElement("option", {value: "Reading"}, "Currently Reading")
+                 )),
+			React.createElement("td", null, this.props.book.dateAdded),
+			React.createElement("td", null, React.createElement("button", {type: "button", className: "btn btn-warning", onClick: leftButtonHandler}, "Save")),
+			React.createElement("td", null, React.createElement(DeleteButton, {book: book, removeHandler: this.props.removeHandler}))
+                   ] ;
+
+
+
+		}
 		return(
 
 
 			React.createElement("tr", null, 
-			React.createElement("td", null, React.createElement("img", {src: bookDetails.imageUrl, height: "80", width: "50"})), 
-			React.createElement("td", null, bookDetails.title), 
-			React.createElement("td", null, bookDetails.author), 
-			React.createElement("td", null, bookDetails.rating), 
-			React.createElement("td", null, this.props.status), 
-			React.createElement("td", null, this.props.book.dateAdded), 
-			React.createElement("td", null, React.createElement("button", {type: "button", className: "btn btn-warning"}, "Edit")), 
-			React.createElement("td", null, React.createElement(DeleteButton, {book: book, removeHandler: this.props.removeHandler}))
+		     fields
+			
 			)
   
 
@@ -558,7 +657,6 @@ var DeleteButton = React.createClass({displayName: "DeleteButton",
 
 });
 
-
 exports.BookShelfPage = BookShelfPage;
 },{"./bookShelfAPI.js":4,"./data.js":7,"./loginAPI":9,"react":224,"react-router":89}],4:[function(require,module,exports){
 var _ = require('lodash');
@@ -570,6 +668,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '211-555-12-12',
           status : 'Read',
+          rating : 4,
           dateAdded: '02/05/16'
           
            
@@ -580,6 +679,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '111-223-23-22',
           status : 'Reading',
+          rating : 4,          
           dateAdded: '11/03/14'
           
            
@@ -591,6 +691,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '922-998-34-21',
           status : 'Reading',
+          rating : 4,
           dateAdded: '10/03/16'
           
            
@@ -601,6 +702,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '144-344-34-44',
           status : 'Read',
+          rating : 4,
           dateAdded: '02/05/16'
           
            
@@ -611,6 +713,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '332-311-31-21',
           status : 'Read',
+          rating : 4,
           dateAdded: '01/01/16'
           
            
@@ -627,7 +730,7 @@ var _ = require('lodash');
             var allbooks = [];
             shelf.map(function(element){
               if(element.userID == i){
-                allbooks.push({ 'id': element.id, userID : element.userID, bookISBN : element.bookISBN, status: element.status});
+                allbooks.push({ 'id': element.id, userID : element.userID, bookISBN : element.bookISBN, rating: element.rating, status: element.status});
               }
             })
 
@@ -639,7 +742,7 @@ var _ = require('lodash');
           var bookStatus = [];
           shelf.map(function(element){
             if (element.userID == i && element.status == s){
-              bookStatus.push({'id': element.id, bookISBN : element.bookISBN, dateAdded: element.dateAdded });
+              bookStatus.push({'id': element.id, bookISBN : element.bookISBN, rating: element.rating, dateAdded: element.dateAdded });
 
             }
 
@@ -650,7 +753,7 @@ var _ = require('lodash');
 
 
 
-         add : function(u,i,s) {
+         add : function(u,i,s,r) {
               var id = 1 ;
               var last = _.last(shelf) ;
               if (last) {
@@ -670,7 +773,7 @@ var _ = require('lodash');
                 } 
                 var d = dd+'/'+mm+'/'+yyyy;
 
-              shelf.push({ 'id': id, userID: u, bookISBN : i, status: s, dateAdded: d}) ;
+              shelf.push({ 'id': id, userID: u, bookISBN : i, status: s, rating: r, dateAdded: d}) ;
               console.log(shelf[id-1]);
 
               },
@@ -686,6 +789,18 @@ var _ = require('lodash');
             })
             var i = shelf.indexOf(e);
             shelf.splice(i, 1);
+          },
+
+
+          edit : function(i, r, s){
+            var index = _.findIndex(shelf, function(item) {
+               return item.id == i;
+            });  
+               
+           if (index != -1) {
+             shelf[index].status = s;
+              shelf[index].rating = r;
+            }
           },
          
 
@@ -892,15 +1007,27 @@ var allBooks =
 var React = require('react')
 var api =  require ('./loginAPI').api;
 var loggedinapi =  require ('./loginAPI').loggedinapi;
-var Router = require('react-router');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router
+var Route = ReactRouter.Route
+var Link = ReactRouter.Link
 var browserHistory = Router.browserHistory;
+//var Redirect = Router.Redirect; 
 //import { browserHistory } from 'react-router'
+
+//var RouterPropTypes = require('react-router').PropTypes;
+
+//Navbar.contextTypes = {
+  //history: RouterPropTypes.history,
+//};
+
+
 
 
 
 
     var LoginPage = React.createClass({displayName: "LoginPage",
-        //mixins: [Navigation],
+
         getInitialState: function() {
                return {email: '', password: '', message: ''};
             },
@@ -920,7 +1047,14 @@ var browserHistory = Router.browserHistory;
                if(valid){
                 var id = api.getid(e);
                 loggedinapi.login(id,e,p);
-                window.location = "http://localhost:8080/BookApp/";// cant figure out this redirecting shit
+                this.context.router.push('/books');
+
+                //this.browserHistory.pushState(null, '/register');
+
+                //<Redirect from='/login' to='/register' />
+                //this.context.router.transitionTo('register');
+                //this.context.router.transitionTo('/register');
+                //window.location = "http://localhost:8080/BookApp/";// cant figure out this redirecting shit
                 //<Redirect from="/login" to="/register"/>
                 //this.transitionTo('/register');
 
@@ -928,7 +1062,7 @@ var browserHistory = Router.browserHistory;
                 //navigateToHelpPage () {
                     //this.history.pushState(null, `/register`);
                 //}
-                //Router.browserHistory.push('BookApp/#/register');
+                //Router.browserHistory.push('/BookApp/#/register');
                 //browserHistory.push('BookApp/#/register');
 
                }else{
@@ -969,7 +1103,8 @@ var browserHistory = Router.browserHistory;
                                         React.createElement("input", {type: "password", className: "form-control", id: "Password1", placeholder: "Password", onChange: this.handlePasswordChange})
                                       ), 
                                       React.createElement("button", {type: "submit", className: "btn btn-default", onClick: this.onSubmit}, "submit")
-                                    )
+                                    ), 
+                                    React.createElement(Link, {to:  '/register'}, "Register Here")
                                 )
                             )
                         )
@@ -977,6 +1112,9 @@ var browserHistory = Router.browserHistory;
           }
         });
 
+    LoginPage.contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
 
     exports.LoginPage = LoginPage;
 
@@ -984,7 +1122,7 @@ var browserHistory = Router.browserHistory;
 var _ = require('lodash');
 
     var loggedin = [{
-      id: 1 ,
+      id: 0 ,
       name : '',
       email : ''           
     }];

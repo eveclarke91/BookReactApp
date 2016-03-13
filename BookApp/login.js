@@ -1,15 +1,27 @@
 var React = require('react')
 var api =  require ('./loginAPI').api;
 var loggedinapi =  require ('./loginAPI').loggedinapi;
-var Router = require('react-router');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router
+var Route = ReactRouter.Route
+var Link = ReactRouter.Link
 var browserHistory = Router.browserHistory;
+//var Redirect = Router.Redirect; 
 //import { browserHistory } from 'react-router'
+
+//var RouterPropTypes = require('react-router').PropTypes;
+
+//Navbar.contextTypes = {
+  //history: RouterPropTypes.history,
+//};
+
+
 
 
 
 
     var LoginPage = React.createClass({
-        //mixins: [Navigation],
+
         getInitialState: function() {
                return {email: '', password: '', message: ''};
             },
@@ -29,7 +41,14 @@ var browserHistory = Router.browserHistory;
                if(valid){
                 var id = api.getid(e);
                 loggedinapi.login(id,e,p);
-                window.location = "http://localhost:8080/BookApp/";// cant figure out this redirecting shit
+                this.context.router.push('/books');
+
+                //this.browserHistory.pushState(null, '/register');
+
+                //<Redirect from='/login' to='/register' />
+                //this.context.router.transitionTo('register');
+                //this.context.router.transitionTo('/register');
+                //window.location = "http://localhost:8080/BookApp/";// cant figure out this redirecting shit
                 //<Redirect from="/login" to="/register"/>
                 //this.transitionTo('/register');
 
@@ -37,7 +56,7 @@ var browserHistory = Router.browserHistory;
                 //navigateToHelpPage () {
                     //this.history.pushState(null, `/register`);
                 //}
-                //Router.browserHistory.push('BookApp/#/register');
+                //Router.browserHistory.push('/BookApp/#/register');
                 //browserHistory.push('BookApp/#/register');
 
                }else{
@@ -79,6 +98,7 @@ var browserHistory = Router.browserHistory;
                                       </div>
                                       <button type="submit" className="btn btn-default" onClick={this.onSubmit}>submit</button>
                                     </form>
+                                    <Link to={ '/register'}>Register Here</Link>
                                 </div>
                             </div>
                         </div>
@@ -86,5 +106,8 @@ var browserHistory = Router.browserHistory;
           }
         });
 
+    LoginPage.contextTypes = {
+        router: React.PropTypes.object.isRequired
+    };
 
     exports.LoginPage = LoginPage;

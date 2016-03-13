@@ -7,6 +7,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '211-555-12-12',
           status : 'Read',
+          rating : 4,
           dateAdded: '02/05/16'
           
            
@@ -17,6 +18,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '111-223-23-22',
           status : 'Reading',
+          rating : 4,          
           dateAdded: '11/03/14'
           
            
@@ -28,6 +30,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '922-998-34-21',
           status : 'Reading',
+          rating : 4,
           dateAdded: '10/03/16'
           
            
@@ -38,6 +41,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '144-344-34-44',
           status : 'Read',
+          rating : 4,
           dateAdded: '02/05/16'
           
            
@@ -48,6 +52,7 @@ var _ = require('lodash');
           userID: 1 ,
           bookISBN : '332-311-31-21',
           status : 'Read',
+          rating : 4,
           dateAdded: '01/01/16'
           
            
@@ -64,7 +69,7 @@ var _ = require('lodash');
             var allbooks = [];
             shelf.map(function(element){
               if(element.userID == i){
-                allbooks.push({ 'id': element.id, userID : element.userID, bookISBN : element.bookISBN, status: element.status});
+                allbooks.push({ 'id': element.id, userID : element.userID, bookISBN : element.bookISBN, rating: element.rating, status: element.status});
               }
             })
 
@@ -76,7 +81,7 @@ var _ = require('lodash');
           var bookStatus = [];
           shelf.map(function(element){
             if (element.userID == i && element.status == s){
-              bookStatus.push({'id': element.id, bookISBN : element.bookISBN, dateAdded: element.dateAdded });
+              bookStatus.push({'id': element.id, bookISBN : element.bookISBN, rating: element.rating, dateAdded: element.dateAdded });
 
             }
 
@@ -87,7 +92,7 @@ var _ = require('lodash');
 
 
 
-         add : function(u,i,s) {
+         add : function(u,i,s,r) {
               var id = 1 ;
               var last = _.last(shelf) ;
               if (last) {
@@ -107,7 +112,7 @@ var _ = require('lodash');
                 } 
                 var d = dd+'/'+mm+'/'+yyyy;
 
-              shelf.push({ 'id': id, userID: u, bookISBN : i, status: s, dateAdded: d}) ;
+              shelf.push({ 'id': id, userID: u, bookISBN : i, status: s, rating: r, dateAdded: d}) ;
               console.log(shelf[id-1]);
 
               },
@@ -123,6 +128,18 @@ var _ = require('lodash');
             })
             var i = shelf.indexOf(e);
             shelf.splice(i, 1);
+          },
+
+
+          edit : function(i, r, s){
+            var index = _.findIndex(shelf, function(item) {
+               return item.id == i;
+            });  
+               
+           if (index != -1) {
+             shelf[index].status = s;
+              shelf[index].rating = r;
+            }
           },
          
 

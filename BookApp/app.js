@@ -5,7 +5,6 @@
     var Route = ReactRouter.Route
     var Link = ReactRouter.Link
     var IndexRoute = ReactRouter.IndexRoute
-    var browserHistory = Router.browserHistory;
 
     var loginapi =  require ('./loginAPI').api;
     var loggedinapi =  require ('./loginAPI').loggedinapi;
@@ -219,21 +218,34 @@
       render : function() {
         return (
           <div>
-            <div className = "title-bar" > BookReads</div>
+            <div className = "title-bar" >BookReads</div>
+            <div className = "navigation" >
+            <Link to={ '/books'}>Home</Link>
+            <div className = "clear"></div>
+            </div>
             {this.props.children}
           </div>
         )
       }
     });
 
+ var redirect = function someAuthCheck() {
+  if(!loggedinapi.getLoggedIn()){
+    console.log("incorrect Login");
+
+  }
+   
+}
+  
+
     ReactDOM.render( (
       <Router>
-          <Route path="/" component={App}>
-             <IndexRoute component={BookClubApp} />
+          <Route path="/" component={App} onEnter={redirect}>
+             <IndexRoute component={Login} />
               <Route path="books/:isbn" component ={BookDetail} />
               <Route path="comment" component ={Comment} />              
-              <Route path="login" component ={Login} />
-              <Route path="register" component ={Register} /> 
+              <Route path="books" component ={BookClubApp} />
+              <Route path="register" component ={Register}   /> 
               <Route path="shelf/:status" component ={Shelf} />
           </Route>
         </Router>

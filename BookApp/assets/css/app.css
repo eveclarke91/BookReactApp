@@ -5,6 +5,35 @@
   list-style: none;
 }
 
+.navigation {
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  background-color: #ccc; 
+  color: #000;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin: 0;
+  line-height: 20px;
+
+}
+
+.navigation a{
+  margin-left: 5px;
+  margin-right: 5px;
+float: left;
+text-decoration: none;
+color:#000 !important;
+}
+
+.navigation a:hover{
+  color: #222;
+}
+
+.clear {
+  clear:both;
+}
+
 .thumb {
   float: left;
   margin: -0.5em 1em 1.5em 0;

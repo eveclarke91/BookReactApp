@@ -1,7 +1,7 @@
 var _ = require('lodash');
 
     var loggedin = [{
-      id: 1 ,
+      id: 0 ,
       name : '',
       email : ''           
     }];
