@@ -78,15 +78,17 @@ var browserHistory = Router.browserHistory;
           render: function(){
                 return (
                         <div>
-                        <h1>Login Page</h1>
+                        
 
                             <div className="row">
-                            <div className="col-md-6 col-md-offset-3">
+                            
+                            <div className="col-md-4 col-md-offset-4">
+                            <h2>Login Here</h2>
                             {this.state.message}
                             </div>
                             </div>
                             <div className="row">
-                                <div className="col-md-6 col-md-offset-3">
+                                <div className="col-md-4 col-md-offset-4">
                                     <form>
                                       <div className="form-group">
                                         <label htmlFor="Email1">Email address</label>
@@ -96,9 +98,8 @@ var browserHistory = Router.browserHistory;
                                         <label htmlFor="Password1">password</label>
                                         <input type="password" className="form-control" id="Password1" placeholder="Password" onChange={this.handlePasswordChange}/>
                                       </div>
-                                      <button type="submit" className="btn btn-default" onClick={this.onSubmit}>submit</button>
+                                      <button type="submit" className="btn btn-primary" onClick={this.onSubmit}>Submit</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Link to={ '/register'}><button type="button" className="btn btn-default">Register Here</button></Link>
                                     </form>
-                                    <Link to={ '/register'}>Register Here</Link>
                                 </div>
                             </div>
                         </div>

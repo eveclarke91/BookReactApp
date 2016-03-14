@@ -4,6 +4,7 @@
  var commentAPI = require('./commentsAPI').commentAPI;  
  var loginAPI =  require ('./loginAPI').api;
  var userDetails = require('./loginAPI').loggedin;
+ var loggedinapi =  require ('./loginAPI').loggedinapi;
  
 
 
@@ -23,22 +24,21 @@
             if(bookdetails){
               display = (
                 <div className = 'container' >
-                      <div className = 'row'>
+                      <div className = 'row spacer'>
                         <div className="col-md-4">
                           <img src={bookdetails.imageUrl}  height="377" width="250"/>
                         </div>
 
                         <div className="col-md-8">
                           <div className = "bookTitle">{bookdetails.title}</div>
-                          <div className = "bookAuthor">{bookdetails.author}</div>
+                          <div className = "bookAuthor">by {bookdetails.author}</div>
                           <div className = "bookinfo">
-                            <span className = "bookStars">{bookdetails.starRating}</span>
-                            <span className = "bookRating">{bookdetails.rating}</span>
+                            <span className = "bookRating">Average Rating: {bookdetails.rating} Stars</span>
                             <span className = "bookReviews">{bookdetails.reviews}</span>
                           </div>
                           <div className = "bookBlurb"> {bookdetails.description}</div>
-                          <div className = "bookType">{bookdetails.printType}</div>
-                          <div className = "bookPublisher" > {bookdetails.publisher}</div>
+                          <div className = "bookType">{bookdetails.printType}, {bookdetails.pages} pages </div>
+                          <div className = "bookPublisher" >Published by {bookdetails.publisher} on {bookdetails.publishDate}</div>
                           <table className="table table-striped">
                             <tr>
                             <td>Isbn</td>
@@ -165,7 +165,7 @@
             },
 
       render: function() {
-        return(
+        var form = (
           <div>
           <div className="row">
           <div className="col-md-12">
@@ -180,6 +180,25 @@
             <button type="submit" className="btn btn-default" onClick={this.onSubmit}>GO</button>
           </form>
           <CommentArea isbn={this.props.isbn}/>
+          </div>
+          );
+        if(!loggedinapi.getLoggedIn()){
+          form = (
+
+          <div className="row">
+          <div className="col-md-12">
+          <p>Login to view comments</p>
+          </div>
+          </div>
+          
+            )
+        }
+
+
+
+        return(
+          <div>
+          {form}
           </div>
 
           );

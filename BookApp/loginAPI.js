@@ -93,7 +93,14 @@ var _ = require('lodash');
             loggedin[0].id = i;
             loggedin[0].name = n;
             loggedin[0].email = e;
-          },          
+          },  
+
+          logout: function(){
+            console.log("in log out function");
+            loggedin[0].id = 0;
+            loggedin[0].name = '';
+            loggedin[0].email = '';
+          }        
     }
 
 

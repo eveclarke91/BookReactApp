@@ -13,6 +13,8 @@
     var Register = require('./register.js' ).RegisterPage;    
     var BookDetail = require('./bookDetail.js' ).BookDetailPage;
     var Comment = require('./comment.js').CommentPage;
+    var Logout = require('./logout.js' ).LogoutPage;
+
     var shelfAPI = require('./bookShelfAPI.js').shelfAPI;
     var userDetails = require('./loginAPI').loggedin;
     var Shelf = require('./bookShelf.js').BookShelfPage;
@@ -32,6 +34,8 @@
       handleSortChange : function(e) {
           this.handleChange(e, 'sort', e.target.value);
       },
+
+  
       render: function(){
            return (
                 <div className="col-md-12">
@@ -100,25 +104,20 @@
             render: function(){
 
         return (
-              <div>
-                  <select id="select" onChange={this.addNewStatus}>
-                     <option>Book Status</option>
+              <div className ="dropdown">
+                  <select id="select"  onChange={this.addNewStatus}>
+                    <option>Book Status</option>
                      <option value="Read">Read</option>
-                     <option value="toRead">Want to Read</option>
+                    <option value="toRead">Want to Read</option>
                      <option value="Reading">Currently Reading</option>
                  </select>
                  <div className="bg-success">{this.state.message}</div>
-
-             </div>
+                </div>
+                   
 
         );
-
     }
-
-
   });
-
-
 
  var ShelfStatus = React.createClass({
 
@@ -130,7 +129,7 @@
 
 
         return (
-           <div>
+           <div className="shelf-widget">
           <h1>Book Shelf</h1>
           <div className = "shelf-list">
           <li>Read({read.length})</li>
@@ -181,14 +180,15 @@
     var BookClubApp = React.createClass({
       
       getInitialState: function() {
-           return { search: '', sort: 'title' } ;
+           return { search: '', sort: 'title'} ;
       }, 
       handleChange : function(type,value) {
             if ( type == 'search' ) {
                 this.setState( { search: value } ) ;
               } else {
                  this.setState( { sort: value } ) ;
-              }
+              } 
+            
       }, 
       render: function(){
             var list = Books.filter(function(b) {
@@ -202,7 +202,8 @@
                    <div className="row">
                       <SelectBox onUserInput={this.handleChange } 
                              filterText={this.state.search} 
-                             sort={this.state.sort} />
+                             sort={this.state.sort}
+                             select ={this.state.select} />
                        <FilteredBookList books={filteredList} />
 
                   </div> 
@@ -215,13 +216,29 @@
 
 
  var App = React.createClass({
+
       render : function() {
+        var menu ;
+        console.log(loggedinapi.getLoggedIn());
+        if(loggedinapi.getLoggedIn()){
+          menu = (
+            <span>
+            <Link to={ '/books'}>Home</Link>
+            <Link to={ '/logout'}>Logout</Link>
+            </span>
+          )
+        }else{
+          menu = (
+            <span className="pull-left">You are not logged in.</span>
+            )
+        }
         return (
           <div>
             <div className = "title-bar" >BookReads</div>
             <div className = "navigation" >
-            <Link to={ '/books'}>Home</Link>
+            {menu}
             <div className = "clear"></div>
+
             </div>
             {this.props.children}
           </div>
@@ -247,6 +264,7 @@
               <Route path="books" component ={BookClubApp} />
               <Route path="register" component ={Register}   /> 
               <Route path="shelf/:status" component ={Shelf} />
+              <Route path="logout" component ={Logout} />
           </Route>
         </Router>
     ),

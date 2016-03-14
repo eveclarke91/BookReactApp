@@ -23,7 +23,7 @@ var _ = require('lodash');
         {   
           id:3,
           userID: 2 ,
-          bookISBN : '211-555-12-12',
+          bookISBN : '717-722-62-63',
           date : '09-09-16',
           content : 'Read this book again and still love it!'
            
@@ -32,11 +32,40 @@ var _ = require('lodash');
         {   
           id:4,
           userID: 1 ,
-          bookISBN : '211-555-12-12',
+          bookISBN : '717-722-62-63',
           date : '12-01-15',
-          content : 'Harry potter rules!'
+          content : 'This book was so interesting. It keeps you hooked right to the end.'
            
-        }
+        },
+
+        {   
+          id:5,
+          userID: 1 ,
+          bookISBN : '717-722-62-63',
+          date : '12-01-15',
+          content : 'Not as good as i thought it would be'
+           
+        },
+
+        {   
+          id:6,
+          userID: 2 ,
+          bookISBN : '404-222-11-11',
+          date : '12-01-15',
+          content : 'Good Read. Definately recommend it.'
+           
+        },
+
+        {   
+          id:7,
+          userID: 1 ,
+          bookISBN : '688-108-11-11',
+          date : '12-01-15',
+          content : 'Excellent book.'
+           
+        },
+
+
         ];
 
         var commentAPI = {

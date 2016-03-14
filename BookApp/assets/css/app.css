@@ -1,16 +1,34 @@
 /* app css stylesheet */
-
+body{
+  font-family: 'Roboto', sans-serif;
+}
 
 .books {
   list-style: none;
+}
+.validation-success{
+  font-size: 16px;
+  padding: 5px;
+  margin-top:10px;
+  background-color: #CCFFC9;
+  color: #1AA800;
+  border: #1AA800 solid 2px;
+}
+.validation-error{
+  font-size: 16px;
+  padding: 5px;
+  margin-top:10px;
+  background-color: #FFB5B4;
+  color: #DE2322;
+  border: #DE2322 solid 2px;
 }
 
 .navigation {
   font-size: 20px;
   text-align: center;
   font-weight: bold;
-  background-color: #ccc; 
-  color: #000;
+  background-color: #F1A65C;
+  color: #FFF !important;
   padding-top: 5px;
   padding-bottom: 5px;
   margin: 0;
@@ -19,17 +37,53 @@
 }
 
 .navigation a{
+  color: #FFF !important;
   margin-left: 5px;
   margin-right: 5px;
-float: left;
-text-decoration: none;
-color:#000 !important;
+  float: left;
+  text-decoration: none;
 }
 
 .navigation a:hover{
-  color: #222;
+  color: #ccc;
 }
+.spacer{
+  margin-top:15px;
+}
+.shelf-widget{
+  width: 200px;
+    background-color: #F1A65C;
+    color:#fff;
+    padding-bottom: 20px;
+    padding-top: 2px;
+    padding-left: 10px;
+    border-radius: 40px 40px 40px 40px;
+    -moz-border-radius: 40px 40px 40px 40px;
+    -webkit-border-radius: 40px 40px 40px 40px;
+    -webkit-box-shadow: 10px 10px 19px 0px rgba(0,0,0,0.36);
+-moz-box-shadow: 10px 10px 19px 0px rgba(0,0,0,0.36);
+box-shadow: 10px 10px 19px 0px rgba(0,0,0,0.36);
 
+}
+.shelf-widget h1{
+  color: #fff;
+}
+.shelf-list{
+  padding-left: 20px;
+  text-transform: capitalize;
+  list-style-type: none;
+}
+.shelf-list li{
+  padding-top: 5px;
+}
+.shelfbox{
+  list-style-type: none;
+    padding: 20px;
+    padding-left: 50px;
+    line-height: 2;
+    color: #ccc;
+    text-decoration: none;
+}
 .clear {
   clear:both;
 }
@@ -64,6 +118,14 @@ color:#000 !important;
   float:left;
   padding:10px;
   margin:10px;
+}
+
+.select{
+  float:left;
+  padding:10px;
+  margin:10px;  
+
+  }
 
 }
 
@@ -118,6 +180,16 @@ color:#000 !important;
   border-bottom: 1px solid #000;
   padding-top: 5px;
   padding-bottom: 10px;
+  line-height: 24px;
+  font-size: 15px;
+  color:;
+}
+.bookType{
+  margin-top: 5px;
+    margin-bottom: 5px;
+}
+.bookPublisher{
+    margin-bottom: 5px;
 }
 
 .comment-form {
@@ -129,21 +201,22 @@ color:#000 !important;
 
 .comment-review {
   font-size: 24px;
-  background-color: #000;
+  background-color: #F1A65C;
   color:#fff;
 }
 
-.commentItem{
-  margin-top: 5px;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #000;
+.commentItem {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #8E8E8E;
 }
 .commentBody{
-  font-size: 20px;
+  margin-top: 13px;
+    font-size: 20px;
 }
 .commentHeader{
-  color:#ccc;
+    color: #989898;
 }
 .userName{
   margin-right: 15px;

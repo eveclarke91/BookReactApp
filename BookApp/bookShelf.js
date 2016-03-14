@@ -49,7 +49,7 @@ var BookShelfPage = React.createClass({
 
 		return(
 			<div className = "row">
-			<div className = "col-md-2">
+			<div className = "col-md-2 shelfbox">
 			<li><Link to={ '/shelf/Read'}>Read({read.length})</Link></li>
 			<li><Link to={ '/shelf/toRead'}>Want to Read({toRead.length})</Link></li>
 			<li><Link to={ '/shelf/Reading'}>Currently Reading({reading.length})</Link></li>
@@ -64,6 +64,8 @@ var BookShelfPage = React.createClass({
 			<th>Rating</th>
 			<th>Shelves</th>
 			<th>Date Added</th>
+			<th></th>
+			<th></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -131,7 +133,7 @@ var BookShelfItem = React.createClass({
 		}
 
 		var fields = [
-            <td><img src={bookDetails.imageUrl}  height="80" width="50"/></td>,
+            <td><Link to={ '/books/' + bookDetails.isbn}><img src={bookDetails.imageUrl}  height="80" width="50" /></Link></td>,
 			<td>{bookDetails.title}</td>,
 			<td>{bookDetails.author}</td>,
 			<td>{book.rating}</td>,
